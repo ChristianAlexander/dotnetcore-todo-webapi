@@ -25,7 +25,7 @@ namespace TodoWebApi.Data.InMemory
 
 		public Task<Todo> Get(int id)
 		{
-			return Task.FromResult(m_todos.GetValueOrDefault(id, null).Clone());
+			return Task.FromResult(m_todos.GetValueOrDefault(id, null)?.Clone());
 		}
 
 		public Task<Todo> Add(Todo todo)
