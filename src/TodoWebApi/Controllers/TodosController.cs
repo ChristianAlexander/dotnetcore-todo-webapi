@@ -68,15 +68,22 @@ namespace TodoWebApi.Controllers
 		}
 
 		private Todo WithUrl(Todo todo) {
+			if (forceHttps)
+				Request.IsHttps = true;
+
 			todo.Url = $"{Request.GetEncodedUrl()}/{todo.Id.ToString()}";
 			return todo;
 		}
 
 		private Todo WithSameUrl(Todo todo) {
+			if (forceHttps)
+				Request.IsHttps = true;
+
 			todo.Url = Request.GetEncodedUrl();
 			return todo;
 		}
 
+		private static readonly bool forceHttps = Environment.GetEnvironmentVariable("FORCE_HTTPS") == "1";
 		private readonly ITodoRepository m_todoRepository;
 	}
 }
