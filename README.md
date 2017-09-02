@@ -4,6 +4,6 @@ An implementation of [Todo-Backend](https://www.todobackend.com/) in ASP.NET Cor
 
 ## Docker
 
-Docker image is available [![Docker Widget]](https://hub.docker.com/r/christianalexander/todo-webapi)
+A Docker image is available [![Docker Widget]](https://hub.docker.com/r/christianalexander/dotnetcore-todo-webapi)
 
-[Docker Widget]: https://img.shields.io/docker/pulls/christianalexander/todo-webapi.svg
+[Docker Widget]: https://img.shields.io/docker/build/christianalexander/dotnetcore-todo-webapi.svg
