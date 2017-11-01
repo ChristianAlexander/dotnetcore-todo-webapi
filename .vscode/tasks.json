@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/src/TodoWebApi/TodoWebApi.csproj"
+                "${workspaceRoot}/dotnetcore-todo-webapi.sln"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
