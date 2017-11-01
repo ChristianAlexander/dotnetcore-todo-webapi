@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TodoWebApi.Data.InMemory
@@ -9,10 +11,8 @@ namespace TodoWebApi.Data.InMemory
 	{
 		public TodoRepository()
 		{
-			m_todos = new Dictionary<int, Todo>();
+			m_todos = new ConcurrentDictionary<int, Todo>();
 			m_nextId = 0;
-			m_idLock = new Object();
-			m_dictionaryLock = new Object();
 		}
 
 		public Task<IEnumerable<Todo>> GetAll()
@@ -33,11 +33,7 @@ namespace TodoWebApi.Data.InMemory
 			if (todo.Id != null)
 				throw new InvalidOperationException("New Todo ID must be null. ID will be assigned by the repository.");
 
-			int id;
-			lock(m_idLock)
-			{
-				id = m_nextId++;
-			}
+			int id = Interlocked.Increment(ref m_nextId);
 
 			var repositoryTodo = todo.Clone();
 
@@ -46,10 +42,7 @@ namespace TodoWebApi.Data.InMemory
 			if (!repositoryTodo.Completed.HasValue)
 				repositoryTodo.Completed = false;
 
-			lock(m_dictionaryLock)
-			{
-				m_todos[id] = repositoryTodo;
-			}
+			m_todos[id] = repositoryTodo;
 
 			return Task.FromResult(repositoryTodo);
 		}
@@ -61,37 +54,26 @@ namespace TodoWebApi.Data.InMemory
 			if (resultTodo == null)
 				return null;
 
-			lock(m_dictionaryLock)
-			{
-				m_todos[id] = resultTodo;
-			}
+			m_todos[id] = resultTodo;
 
 			return Task.FromResult(resultTodo);
 		}
 
 		public Task Delete(int id)
 		{
-			lock (m_dictionaryLock)
-			{
-				m_todos.Remove(id);
-			}
+			m_todos.TryRemove(id, out Todo removedValue);
 
 			return Task.FromResult<object>(null);
 		}
 
 		public Task Clear()
 		{
-			lock(m_dictionaryLock)
-			{
-				m_todos.Clear();
-			}
+			m_todos.Clear();
 
 			return Task.FromResult<object>(null);
 		}
 
-		private Object m_idLock;
 		private int m_nextId;
-		private Object m_dictionaryLock;
-		private Dictionary<int, Todo> m_todos;
+		private ConcurrentDictionary<int, Todo> m_todos;
 	}
 }
